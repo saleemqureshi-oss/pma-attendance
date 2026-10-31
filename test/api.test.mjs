@@ -213,6 +213,35 @@ test('removing the sample data empties students and attendance but keeps logins'
   await login(client, 'ahmed', 'teacher123');
 });
 
+test('phone numbers: saved, validated, optional, and shown to a teacher only for their own students', async () => {
+  const { client } = setup();
+  const admin = await login(client, 'admin', 'admin123');
+  const { data: all } = await admin('GET', 'students');
+  const student = all.students.find((x) => x.id === 's001');
+  assert.equal(student.phone, undefined); // records saved before this field existed still load
+
+  assert.equal((await admin('PUT', 'students/s001', { ...student, phone: 'call me' })).status, 400);
+  assert.equal((await admin('PUT', 'students/s001', { ...student, phone: '+1 (306) 555-0100' })).status, 200);
+
+  const own = await login(client, 'ahmed', 'teacher123');
+  const { data: mine } = await own('GET', 'attendance');
+  assert.equal(mine.students.find((s) => s.id === 's001').phone, '+1 (306) 555-0100');
+
+  const other = await login(client, 'aisha', 'teacher123');
+  const { data: hers } = await other('GET', 'attendance');
+  assert.ok(!hers.students.some((s) => s.id === 's001'));
+
+  const { data: imported } = await admin('POST', 'students/import', {
+    rows: [
+      { name: 'With Phone', gender: 'boy', phone: '306-555-0101' },
+      { name: 'No Phone', gender: 'girl' },
+      { name: 'Bad Phone', gender: 'girl', phone: 'abc' },
+    ],
+  });
+  assert.equal(imported.added, 2);
+  assert.deepEqual(imported.skipped.map((s) => s.line), [4]);
+});
+
 test('first-run passwords can come from the environment, replacing the published defaults', async (t) => {
   process.env.PMA_ADMIN_PASSWORD = 'private-admin';
   process.env.PMA_TEACHER_PASSWORD = 'private-teacher';

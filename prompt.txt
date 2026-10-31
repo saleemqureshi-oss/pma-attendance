@@ -1,0 +1,13 @@
+1-i want to make a attendance web app for madarsah students 
+2-there are 3 male teachers & 2 female teachers every teacher will mark it
+3-there are almost 100 students boys & girls
+4-attendnance should be monday to friday start at 5:30 pm
+5-there should be 3 options present, absent & late 
+6-there should be another field for remarks or comments
+7-i want to host data on server side
+8-name of the madarsah PMA attendance
+9-make a nice layout. i want to host website on netlify for demo purpose & later i will upload it on webhosting
+10-build a admin panel
+
+Admin: username admin, password Bilalusman
+Teachers: usernames ahmed, bilal, hamza, aisha and maryam, password Usmanbilal

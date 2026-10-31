@@ -64,6 +64,10 @@ function options(list, selected, blank) {
   return (blank !== undefined ? [`<option value="">${esc(blank)}</option>`] : []).concat(opts).join('');
 }
 
+function telHref(phone) {
+  return `tel:${phone.replace(/[^0-9+]/g, '')}`;
+}
+
 function loading(el) {
   el.innerHTML = '<div class="empty">Loading…</div>';
 }
@@ -329,7 +333,7 @@ async function viewMark(page, date) {
       const buttons = Object.entries(STATUS).map(([k, label]) =>
         `<button type="button" class="${k}" data-status="${k}" aria-pressed="${w.status === k}" ${canEdit ? '' : 'disabled'}>${label}</button>`).join('');
       return `<article class="row ${esc(w.status || '')}" data-id="${esc(s.id)}">
-        <div class="name"><b>${esc(s.name)}</b><small>${s.rollNo ? `Roll ${esc(s.rollNo)}` : 'No roll no.'}${s.className ? ` · ${esc(s.className)}` : ''}${r?.byName && isAdmin() ? ` · by ${esc(r.byName)}` : ''}</small></div>
+        <div class="name"><b>${esc(s.name)}</b><small>${s.rollNo ? `Roll ${esc(s.rollNo)}` : 'No roll no.'}${s.className ? ` · ${esc(s.className)}` : ''}${r?.byName && isAdmin() ? ` · by ${esc(r.byName)}` : ''}${s.phone ? ` · <a href="${esc(telHref(s.phone))}">${esc(s.phone)}</a>` : ''}</small></div>
         <div class="seg" role="group" aria-label="Attendance for ${esc(s.name)}">${buttons}</div>
         <input type="text" class="remark" maxlength="500" placeholder="Remarks (optional)" aria-label="Remarks for ${esc(s.name)}" value="${esc(w.remark)}" ${canEdit ? '' : 'disabled'}>
       </article>`;
@@ -524,6 +528,7 @@ async function viewStudents(page) {
 
   const form = (s = {}) => `
     <label class="field"><span>Full name</span><input type="text" name="name" maxlength="120" value="${esc(s.name)}" required></label>
+    <label class="field"><span>Phone number (optional)</span><input type="tel" name="phone" maxlength="30" autocomplete="off" value="${esc(s.phone)}"></label>
     <div class="form-grid">
       <label class="field"><span>Roll no.</span><input type="text" name="rollNo" maxlength="20" value="${esc(s.rollNo)}"></label>
       <label class="field"><span>Gender</span><select name="gender">${options([['boy', 'Boy'], ['girl', 'Girl']], s.gender || 'boy')}</select></label>
@@ -554,31 +559,32 @@ async function viewStudents(page) {
       </div>
     </div>
     <div class="toolbar">
-      <input type="search" id="q" placeholder="Search name, roll no. or class" aria-label="Search students">
+      <input type="search" id="q" placeholder="Search name, roll, phone or class" aria-label="Search students">
       <select id="teacher" aria-label="Teacher">${options(teachers.map((t) => [t.id, t.name]), '', 'All teachers')}</select>
       <select id="gender" aria-label="Gender">${options([['boy', 'Boys'], ['girl', 'Girls']], '', 'Boys and girls')}</select>
       <select id="state" aria-label="Status">${options([['active', 'Active'], ['inactive', 'Inactive'], ['all', 'Active and inactive']], 'active')}</select>
     </div>
     <section class="card"><div class="table-wrap"><table>
-      <thead><tr><th>Roll</th><th>Name</th><th>Gender</th><th>Class</th><th>Teacher</th><th></th></tr></thead>
+      <thead><tr><th>Roll</th><th>Name</th><th>Phone</th><th>Gender</th><th>Class</th><th>Teacher</th><th></th></tr></thead>
       <tbody id="tbody"></tbody></table></div></section>`;
 
   const tbody = page.querySelector('#tbody');
   function render() {
     const q = filter.q.toLowerCase();
     const list = students.filter((s) =>
-      (!q || `${s.name} ${s.rollNo} ${s.className}`.toLowerCase().includes(q)) &&
+      (!q || `${s.name} ${s.rollNo} ${s.className} ${s.phone || ''}`.toLowerCase().includes(q)) &&
       (!filter.teacher || s.teacherId === filter.teacher) &&
       (!filter.gender || s.gender === filter.gender) &&
       (filter.state === 'all' || s.active === (filter.state === 'active')));
     tbody.innerHTML = list.map((s) => `<tr class="${s.active ? '' : 'off'}">
       <td>${esc(s.rollNo)}</td>
       <td>${esc(s.name)}${s.active ? '' : ' <span class="pill none">Inactive</span>'}</td>
+      <td>${s.phone ? `<a href="${esc(telHref(s.phone))}">${esc(s.phone)}</a>` : '<span class="muted">–</span>'}</td>
       <td>${s.gender === 'girl' ? 'Girl' : 'Boy'}</td>
       <td>${esc(s.className)}</td>
       <td>${esc(teacherName[s.teacherId] || 'Not assigned')}</td>
       <td class="num"><button class="link" data-edit="${esc(s.id)}">Edit</button></td>
-    </tr>`).join('') || '<tr><td colspan="6" class="empty">No students found.</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="7" class="empty">No students found.</td></tr>';
   }
   tbody.onclick = (e) => {
     const id = e.target.dataset.edit;
@@ -592,7 +598,7 @@ async function viewStudents(page) {
   page.querySelector('#import').onclick = () => formDialog({
     title: 'Import students from CSV',
     submit: 'Import',
-    body: `<p>Columns: <b>name, rollNo, gender, className, teacher</b>. Gender is boy or girl. Teacher is the teacher's username.</p>
+    body: `<p>Columns: <b>name, rollNo, gender, className, teacher, phone</b>. Gender is boy or girl. Teacher is the teacher's username. Phone is optional.</p>
       <p><button type="button" class="link" id="template">Download a template</button></p>
       <label class="field"><span>CSV file</span><input type="file" name="file" accept=".csv,text/csv" required></label>`,
     onSubmit: async (_, f) => {
@@ -615,6 +621,7 @@ async function viewStudents(page) {
           gender: at(r, 'gender'),
           className: at(r, 'classname', 'class'),
           teacher: at(r, 'teacher'),
+          phone: at(r, 'phone', 'phonenumber'),
         })),
       });
       toast(`Imported ${res.added} student${res.added === 1 ? '' : 's'}.`);
@@ -626,8 +633,8 @@ async function viewStudents(page) {
     },
   }).querySelector('#template').addEventListener('click', () => {
     downloadCsv('students-template.csv', [
-      ['name', 'rollNo', 'gender', 'className', 'teacher'],
-      ['Student Name', '101', 'boy', 'Hifz Boys A', teachers[0]?.username || ''],
+      ['name', 'rollNo', 'gender', 'className', 'teacher', 'phone'],
+      ['Student Name', '101', 'boy', 'Hifz Boys A', teachers[0]?.username || '', '306-555-0100'],
     ]);
   });
   render();

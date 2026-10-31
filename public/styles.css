@@ -117,7 +117,7 @@ main { padding: 26px 30px 110px; max-width: 1180px; width: 100%; }
 .field { display: block; margin-bottom: 13px; }
 .field > span { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--ink-2); }
 .field small { display: block; color: var(--ink-3); margin-top: 3px; }
-input[type=text], input[type=password], input[type=date], input[type=time], input[type=search], select {
+input[type=text], input[type=tel], input[type=password], input[type=date], input[type=time], input[type=search], select {
   width: 100%;
   border: 1px solid #cfc9b8;
   background: #fff;
