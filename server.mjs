@@ -14,7 +14,7 @@ const MAX_BODY = 2 * 1024 * 1024;
 
 const api = createApi(fileStore(process.env.DATA_DIR || path.join(ROOT, 'data')));
 
-const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml' };
+const TYPES = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.webp': 'image/webp' };
 const SECURITY_HEADERS = {
   'content-security-policy': "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'",
   'x-content-type-options': 'nosniff',

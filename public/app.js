@@ -153,7 +153,7 @@ function formDialog({ title, body, submit = 'Save', danger, onSubmit }) {
 
 function renderLogin(message) {
   $app.innerHTML = `<div class="login"><form class="login-card">
-    <img src="logo.svg" alt="">
+    <img src="logo.webp" alt="Prairie Muslim Association logo">
     <h1>PMA Attendance</h1>
     <p class="sub">Sign in to mark or review attendance</p>
     <p class="error" ${message ? '' : 'hidden'}>${esc(message || '')}</p>
@@ -198,7 +198,7 @@ const isAdmin = () => me.user.role === 'admin';
 function renderShell() {
   $app.innerHTML = `<div class="shell">
     <aside class="side">
-      <div class="brand"><img src="logo.svg" alt=""><div><b>PMA Attendance</b><small>${isAdmin() ? 'Admin panel' : 'Teacher'}</small></div></div>
+      <div class="brand"><img src="logo.webp" alt=""><div><b>PMA Attendance</b><small>${isAdmin() ? 'Admin panel' : 'Teacher'}</small></div></div>
       <nav class="nav" aria-label="Main"></nav>
       <div class="who"><b>${esc(me.user.name)}</b><button type="button" id="logout">Sign out</button></div>
     </aside>

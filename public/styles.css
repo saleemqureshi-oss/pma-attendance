@@ -55,7 +55,7 @@ a { color: var(--green-700); }
   padding: 32px 28px;
   box-shadow: 0 20px 50px rgb(0 0 0 / 25%);
 }
-.login-card img { width: 56px; height: 56px; display: block; margin: 0 auto 14px; }
+.login-card img { width: 128px; height: 128px; display: block; margin: 0 auto 12px; }
 .login-card h1 { text-align: center; color: var(--green-800); }
 .login-card p.sub { text-align: center; color: var(--ink-2); margin: 4px 0 22px; }
 .login-card .btn { width: 100%; justify-content: center; margin-top: 6px; padding: 11px; }
@@ -74,7 +74,7 @@ a { color: var(--green-700); }
   height: 100vh;
 }
 .brand { display: flex; align-items: center; gap: 10px; padding: 0 6px; }
-.brand img { width: 36px; height: 36px; border: 1px solid rgb(217 178 95 / 40%); border-radius: 10px; }
+.brand img { width: 46px; height: 46px; background: #fff; border-radius: 50%; flex: none; }
 .brand b { font-family: Georgia, serif; font-size: 16px; line-height: 1.15; display: block; }
 .brand small { color: var(--gold); font-size: 12px; }
 .nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
@@ -279,7 +279,7 @@ dialog .btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8
   .shell { display: block; }
   .side { position: sticky; top: 0; z-index: 30; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 10px 16px; gap: 8px; }
   .brand { padding: 0; }
-  .brand img { width: 30px; height: 30px; }
+  .brand img { width: 40px; height: 40px; }
   .nav { order: 3; flex: 0 0 100%; flex-direction: row; overflow-x: auto; scrollbar-width: none; }
   .nav a { padding: 6px 11px; }
   .who { border: 0; padding: 0; text-align: right; }
